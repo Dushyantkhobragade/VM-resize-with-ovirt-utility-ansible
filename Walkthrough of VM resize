@@ -1,0 +1,33 @@
+- Take backup of fstab on all vms
+
+  ansible -i vmlist all -b -m copy -a 'src=/etc/fstab dest=/etc/fstab.bak remote_src=yes'
+
+- Update ramdisk size to 28GB on all vms
+
+  ansible -i vmlist all -b -m lineinfile -a 'path=/etc/fstab regexp="^tmpfs\s+/mnt/ramdisk" line="tmpfs /mnt/ramdisk tmpfs defaults,size=28G 0 0"'
+
+  ansible -i vmlist all -m shell -a 'cat /etc/fstab'
+
+- On Oracle Side, vm resouce resize
+
+Create for loop with vm list below commands 
+
+for vm in $(cat vm_list); do 'cmd' ; done
+
+commands:
+ uv run ovirt_tool.py --profile Prod vm-action <<VM_Name>>  shutdown 
+ uv run ovirt_tool.py --profile Prod vm-config <<VM_Name>> --memory 28672
+ uv run ovirt_tool.py --profile Prod vm-action <<VM_Name>>  start
+ uv run ovirt_tool.py --profile Prod vm-move <<VM_Name>> <<Target_Host>>
+
+#### SVT
+
+with for loop
+
+uv run ovirt_tool.py vm-info <<VM_Name>>         #### To get CPU/Memory information
+
+with ansible 
+
+ansible -i vmlist all -m shell -a 'cat /etc/fstab; df -hTP /mnt/ramdisk'     #### To check ramdisk size = 28G
+
+######################################################################################################################
