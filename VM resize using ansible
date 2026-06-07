@@ -12,7 +12,7 @@
     - name: Login to Ovirt
       ovirt.ovirt.ovirt_auth:  
         url: https://dushyantlab.io/ovirt-engine/api
-        username: admin@internal
+        username: dushyant
         password: 123456
         insecure: true
 
